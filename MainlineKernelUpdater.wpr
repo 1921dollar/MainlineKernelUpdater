@@ -1,8 +1,0 @@
-#!wing
-#!version=6.0
-##################################################################
-# Wing IDE project file                                          #
-##################################################################
-[project attributes]
-proj.file-list = [loc('update_kernel.py')]
-proj.file-type = 'shared'
