@@ -42,7 +42,6 @@ def main():
         table_contents = mainline_kernel_page[table_start_pos:table_end_pos]
         table_contents = table_contents.split("<tr>")
         links = []
-        version_names = []
         versions = []
         for row in table_contents:
             if "<td " in row and "<a href=\"v" in row:
@@ -54,20 +53,17 @@ def main():
                     
                     version_start_pos = 1
                     version_end_pos = len(link)-1
-                    version_name = link[version_start_pos:version_end_pos]
-                    version_names.append(version_name)
-                    
-                    # Shorten version_name to only 5 chars
-                    version_name = version_name[0:5]
-                    version = float(version_name.replace(".", ""))
+                    version = link[version_start_pos:version_end_pos]
                     versions.append(version)
-    
-        latest_version = max(versions, key=float)
-        latest_version_ind = versions.index(latest_version)
-        print("Latest version available: " + version_names[latest_version_ind])
+        
+        orig_versions = versions.copy()
+        versions.sort(key=lambda s: list(map(int, s.split('.'))))
+        latest_version = versions[-1]
+        latest_version_ind = orig_versions.index(latest_version)
+        print("Latest version available: " + latest_version)
         
         # Is version installed?
-        kernel_result = subprocess.run(['apt list --installed | grep linux-headers-' + version_names[latest_version_ind]], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
+        kernel_result = subprocess.run(['apt list --installed | grep linux-headers-' + latest_version], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
         kernel_result = kernel_result.stdout.decode('utf-8')
         kernel_result = kernel_result.split('\n')
         
